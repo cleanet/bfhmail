@@ -1,0 +1,228 @@
+#!/usr/bin/python3
+import sys, os, math, readline
+def generate_passwords(length_min,length_max,dic,boolean,pattern):
+	n=1
+	code=""
+	# Prints the range
+	for num in range(min,(max+1)):
+		lista=[]
+		tab_n=1 #tabulations' number
+		# For each number printed in the previous loop for, it does other loop for
+		for i in range(1,(num+1)):
+			# If the variable's number is the last
+			if i==(num+1):
+				lista.append("L"+str(n))
+				code+="for L"+str(n)+" in dic:\n"
+			else:
+				lista.append("L"+str(n))
+				code+="for L"+str(n)+" in dic:\n"
+				#Print as many tabs as variable's value 'tab_n'
+				for tab in range(1,(tab_n+1)):
+					code+="\t"
+				tab_n+=1
+				n+=1
+		passwords=""
+		#This creates a mathematical operation, with the 'item' variables. For generate the passwords
+		for item in lista:
+			passwords+=str(item)+"+"
+		leng=len(passwords)
+		passwords=passwords[:leng -1]
+		# if the 'keep file' option is true, the passwords are stored in a file created, specified.
+		if boolean==True:
+			if pattern==True:
+				code+="password="+str(passwords)+"; passwords.write(p[0]+password+p[1]+'\\n')"
+			else:
+				code+="password="+str(passwords)+"; passwords.write(password+'\\n')"
+		# else, this keep it on 'passwords' list, created
+		elif boolean==False:
+			if pattern==True:
+				code+="password="+str(passwords)+"; passwords.append(p[0]+password+p[1])"
+			else:
+				code+="password="+str(passwords)+"; passwords.append(password)"
+		code+="\n"
+	return code
+try:
+	print("""
+ ___
+(._.)  _/  '  _ _/  '        _  _
+<|>   (/  /  (  /  /  () /) (/ /  (/
+_/\_                              /
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+	""")
+#
+# PASSWORDS' LENGTH
+#
+	min_max=False
+	while min_max==False:
+		min=int(input("nº min. characters: "))
+		max=int(input("nº max. characters: "))
+		result=max-min
+		if result > 0:
+			min_max=True
+		elif max==min:
+			min_max=True
+		else:
+			min_max=False
+			print("\033[1;31m[-]\033[0m "+str(min)+" is greater than "+str(max))
+#
+# SELECT DICTIONARY TYPE
+#
+	print("""
+	●▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+		1) Numeric
+
+		2) Alpha-numeric	(uppercase)
+		3) Alpha-numeric	(lowercase)
+		4) Alpha-numeric	(lowercase/uppercase and numeric)
+
+		5) Alphabetical		(uppercase)
+		6) Alphabetical		(lowercase)
+		7) Alphabetical		(lowercase and uppercase)
+		8) Custom dictionary
+		99) Return
+
+	●▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+	""")
+	type=None
+	while type==None:
+		type=int(input("dictionary type: "))
+		if type == 99:
+			os.system("./main 1")
+		elif type == 8:
+			dic=str(input("dictionary: "))
+			dic1=[]
+			for item in dic:
+				dic1.append(str(item))
+			dic=dic1
+		elif type < 1 or type > 8:
+			print("\033[1;31m[-]\033[0m The option "+str(type)+" doesn't exist")
+			type=None
+		elif type > 0 and type < 9:
+			type=type
+#
+# SELECT SPECIAL CHARACTERS
+#
+	if type!=8:
+		special_characters=input("special characters [y/n]: ")
+	else:
+		special_characters="N"
+	if special_characters=="y" or special_characters=="Y":
+		special_characters=True
+	elif special_characters=="n" or special_characters=="N":
+		special_characters=False
+#
+# KEEP DICTIONARY FILE
+#
+	output=input("Do you want to Keep dictionary file? [y/n] ")
+	pathfile=None
+	if output=="y" or output=="Y":
+		output=True
+		output_input=False
+		while output_input==False:
+			pathfile=str(input("path: "))
+			if pathfile=="" or pathfile==' ':
+                                print("\033[1;31m[-]\033[0m Empty")
+                                output_input=False
+			elif os.path.isfile(str(pathfile)):
+				print("\033[1;31m[-]\033[0m This file exists")
+				output_input=False
+			else:
+				output_input=True
+	else:
+		output=False
+		print("\033[1;31m[!] Warning:\033[0m If you don't save the passwords generated, it will keep in a variable, and it can dead this process, while this is generated (if it generate a lot of passwords)")
+		cancel=str(input("Cancel? [y/n]: "))
+		if cancel=="Y" or cancel=="y":
+			os.system("./dictionary")
+	characters=[
+		["0","1","2","3","4","5","6","7","8","9"],
+		["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"],
+		["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
+		[" ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","\\","]","^","_","`","~"]
+	]
+	#This Generates the dictionary types
+	switch_dic={
+		1: characters[0],
+		2: characters[1]+characters[0],
+		3: characters[2]+characters[0],
+		4: characters[1]+characters[2]+characters[0],
+		5: characters[1],
+		6: characters[2],
+		7: characters[1]+characters[2]
+	}
+	if type!=8:
+		dic=switch_dic.get(type,"Invalid option")
+	if special_characters==True:
+		dic=dic+characters[3]
+	pattern=None
+#
+# PATTERN IN PASSWORDS GENERATED
+#
+	while pattern==None:
+		pattern=str(input("Do you want to use pattern? [y/n]: "))
+		if pattern=="Y" or pattern=="y":
+			pattern=True
+		elif pattern=="N" or pattern=="n":
+			pattern=False
+		else:
+			pattern=None
+			print("\033[1;31m[-]\033[0m Invalid option")
+	if pattern==True:
+		pattern_input=False
+		while pattern_input==False:
+			pattern_input=str(input("pattern: "))
+			if pattern_input=='' or pattern_input==" ":
+				print("\033[1;31m[-]\033[0m input empty")
+				pattern_input=False
+			elif pattern_input.count("?")==0:
+                                print("\033[1;31m[-]\033[0m It needs one '?'")
+                                pattern_input=False
+			elif pattern_input.count("?") > 1:
+				print("\033[1;31m[-]\033[0m It only lets one '?'")
+				pattern_input=False
+	#Calculate combinations' number
+	combinations="combinations="
+	for y in range(min,(max+1)):
+		if y==max:
+			combinations+="(len(dic)**"+str(y)+")"
+		else:
+			combinations+="(len(dic)**"+str(y)+")+"
+	#execute the script generated by 'generate_password()' function, for generate the passwords
+	exec(combinations)
+	print("Generating "+str(combinations)+" passwords...")
+	if pattern==True:
+		string="p=\""+str(pattern_input)+"\"\np=p.split('?')\n"
+	else:
+		string=""
+	#This create a file (empty) in the PC's location specified
+	if output==True:
+		string+="dic="+str(dic)+"\npasswords=open(\'"+str(pathfile)+"\','w')\n"
+		if pattern==True:
+			string+=generate_passwords(min,max,dic,True,True)
+		elif pattern==False:
+			string+=generate_passwords(min,max,dic,True,False)
+		string+="passwords.close()"
+	#This create a list (empty), if the option is false
+	elif output==False:
+		string+="dic="+str(dic)+"\npasswords=[]\n"
+		if pattern==True:
+                	string+=generate_passwords(min,max,dic,False,True)
+		elif pattern==False:
+                	string+=generate_passwords(min,max,dic,False,False)
+	exec(str(string))
+	print("\033[1;32m[+]\033[0m Passwords generated successfully") # Finish passwords generated
+	# After, this asks if you want continue or exit. If continue, it execute 'attack' script with the dictionary
+	salir=str(input("exit? [y/n]: "))
+	if salir=="Y" or salir=="y":
+		sys.exit()
+	elif salir=="N" or salir=="n":
+		if output==False:
+			passwords="<<==>>".join(passwords)
+			passwords=str(passwords)
+			os.system("./attack False \'"+str(passwords)+"\'")
+		else:
+			os.system("./attack True \'"+str(pathfile)+"\'")
+except KeyboardInterrupt:
+	print("Oh! What happened? :O")
+except ValueError:
+        print("\033[1;31m[-]\033[0m Error at type a value. Incorrect value or you don't type nothing.")
