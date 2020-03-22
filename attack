@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-import os,sys,smtplib,re,readline,subprocess
+import os,sys,smtplib,readline,subprocess
 import mechanize, random, time
-from email.mime.text import MIMEText
 
 # Funtion for create a resume's file at dictionary
 def file_resume(overwrite,last_password,filedic):
