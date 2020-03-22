@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, os, math, readline
+import sys, os, readline
 def generate_passwords(length_min,length_max,dic,boolean,pattern):
 	n=1
 	code=""
