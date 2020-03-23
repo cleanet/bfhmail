@@ -13,14 +13,10 @@ def file_resume(overwrite,last_password,filedic):
 			break;
 	print("count: "+str(count))
 	if overwrite==True:
-		os.system("sed -i  '1,"+str(count)+"d\' "+str(filedic))
+		os.system("sed -i '1,"+str(count)+"d\' "+str(filedic))
 		sys.exit()
 	else:
-		files=str(subprocess.check_output("ls "+str(filedic)+".restore* 2> /dev/null | wc -l", shell=True))
-		files=files.replace("b","").replace("\'","").replace("\\n","")
-		files=int(files)
-		if files==0:
-			os.system("sed -e  '1,"+str(count)+"d\' "+str(filedic)+" > "+str(filedic)+".restore")
+		os.system("sed -e '1,"+str(count)+"d\' "+str(filedic)+" > "+str(filedic)+".restore")
 #'Validate' class wih 'email' function for validate 'email_input' variable
 class Validate:
 	def email(self, email):
