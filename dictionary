@@ -69,9 +69,6 @@ def attack_live(service,server,port,email,password,username):
 			else:
 				print("\033[1;31m[-]\033[0m not found: "+str(password)+" username: "+str(username))
 				time.sleep(5)
-			f=open("error","w")
-			f.write(text)
-			f.close
 		except:
 			print("\033[1;31m[!] WARNING!\033[0m Fatal error in the login")
 			print(sys.exc_info())
