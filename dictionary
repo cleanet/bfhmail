@@ -54,8 +54,8 @@ def attack_live(service,server,port,email,password,username):
 			browser.addheaders=[('User-Agent',random.choice(useragents))] # client type random
 			website=browser.open("http://website.com/login")
 			browser.select_form(predicate=lambda frm: 'id' in frm.attrs and frm.attrs['id'] == 'form_id')
-			browser.form["signin-form[login]"]=username
-			browser.form["signin-form[password]"]=password
+			browser.form["name_username"]=username
+			browser.form["name_password"]=password
 			browser.method="POST"
 			submit=browser.submit()
 			text=str(submit.read())
