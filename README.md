@@ -37,12 +37,12 @@ After of genrate the passwords, it allow you continue with the 'attack' file, wi
 ### ATTACK
 While this script has brute force, you can stop it, with Ctrl+C, and storage the progress. For later, continue.
 # LIBRARIES
-lib
-smtplib
-random
-mechanize
-os
-sys
-readline
-subprocess
-time
+* lib
+* smtplib
+* random
+* mechanize
+* os
+* sys
+* readline
+* subprocess
+* time
