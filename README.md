@@ -1,3 +1,4 @@
+![screenshot bfhmail](/screenshots/bfhmail.png)
 Autor      | cleanet
 ------------|----------
 Website  |  https://www.cleannet.260mb.net
