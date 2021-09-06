@@ -1,7 +1,8 @@
 ![screenshot bfhmail](/screenshots/bfhmail.png)
+
 Autor      | cleanet
 ------------|----------
-Website  |  https://www.cleanet.alwaysdata.net
+Website  |  https://cleanet.alwaysdata.net
 Email      |  cleannet29@gmail.com
 
 Script para hacer ataques de fuerza bruta a Hotmail, Gmail y sitios web (sin captchas)
